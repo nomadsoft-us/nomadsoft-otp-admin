@@ -4,7 +4,8 @@
     "column1": "ID",
     "column2": "Name",
     "column3": "Email",
-    "column4": "Role"
+    "column4": "Phone Number",
+    "column5": "Role"
   },
   "actions": {
     "add": "Add User",
@@ -24,6 +25,9 @@
       "apply": "Apply"
     },
     "inputs": {
+      "search": {
+        "label": "Search users..."
+      },
       "role": {
         "label": "Role",
         "options": {

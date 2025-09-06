@@ -12,6 +12,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useSnackbar } from "@/hooks/use-snackbar";
 import { useRouter } from "next/navigation";
 import HTTP_CODES_ENUM from "@/services/api/types/http-codes";
+import AuthPageWrapper from "@/components/auth/auth-page-wrapper";
+import GlassmorphismCard from "@/components/auth/glassmorphism-card";
 import { useTranslation } from "@/services/i18n/client";
 import { useEffect, useMemo, useState } from "react";
 import Alert from "@mui/material/Alert";
@@ -146,38 +148,52 @@ function Form() {
   });
 
   return (
-    <FormProvider {...methods}>
-      <Container maxWidth="xs">
-        <form onSubmit={onSubmit}>
-          <Grid container spacing={2} mb={2}>
-            <Grid size={{ xs: 12 }} mt={3}>
-              <Typography variant="h6">{t("password-change:title")}</Typography>
-            </Grid>
-            <ExpiresAlert />
-            <Grid size={{ xs: 12 }}>
-              <FormTextInput<PasswordChangeFormData>
-                name="password"
-                label={t("password-change:inputs.password.label")}
-                type="password"
-                testId="password"
-              />
-            </Grid>
-            <Grid size={{ xs: 12 }}>
-              <FormTextInput<PasswordChangeFormData>
-                name="passwordConfirmation"
-                label={t("password-change:inputs.passwordConfirmation.label")}
-                type="password"
-                testId="password-confirmation"
-              />
-            </Grid>
+    <AuthPageWrapper>
+      <FormProvider {...methods}>
+        <Container maxWidth="xs">
+          <GlassmorphismCard
+            sx={{
+              padding: { xs: 2, sm: 3 },
+              margin: { xs: 1, sm: 2 },
+              mt: { xs: 2, sm: 4 },
+            }}
+          >
+            <form onSubmit={onSubmit}>
+              <Grid container spacing={2} mb={2}>
+                <Grid size={{ xs: 12 }} mt={3}>
+                  <Typography variant="h6">
+                    {t("password-change:title")}
+                  </Typography>
+                </Grid>
+                <ExpiresAlert />
+                <Grid size={{ xs: 12 }}>
+                  <FormTextInput<PasswordChangeFormData>
+                    name="password"
+                    label={t("password-change:inputs.password.label")}
+                    type="password"
+                    testId="password"
+                  />
+                </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <FormTextInput<PasswordChangeFormData>
+                    name="passwordConfirmation"
+                    label={t(
+                      "password-change:inputs.passwordConfirmation.label"
+                    )}
+                    type="password"
+                    testId="password-confirmation"
+                  />
+                </Grid>
 
-            <Grid size={{ xs: 12 }}>
-              <FormActions />
-            </Grid>
-          </Grid>
-        </form>
-      </Container>
-    </FormProvider>
+                <Grid size={{ xs: 12 }}>
+                  <FormActions />
+                </Grid>
+              </Grid>
+            </form>
+          </GlassmorphismCard>
+        </Container>
+      </FormProvider>
+    </AuthPageWrapper>
   );
 }
 

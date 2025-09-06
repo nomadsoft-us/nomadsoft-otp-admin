@@ -24,6 +24,7 @@ import { IS_SIGN_UP_ENABLED } from "@/services/auth/config";
 
 function ResponsiveAppBar() {
   const { t } = useTranslation("common");
+  const { t: tCommon } = useTranslation("common-ui");
   const { user, isLoaded } = useAuth();
   const { logOut } = useAuthActions();
   const [anchorElementNav, setAnchorElementNav] = useState<null | HTMLElement>(
@@ -48,7 +49,23 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      sx={{
+        background: '#101014',
+        backgroundImage: `
+          repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 40px),
+          repeating-linear-gradient(45deg, rgba(0,255,128,0.09) 0, rgba(0,255,128,0.09) 1px, transparent 1px, transparent 20px),
+          repeating-linear-gradient(-45deg, rgba(255,0,128,0.10) 0, rgba(255,0,128,0.10) 1px, transparent 1px, transparent 30px),
+          repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 80px),
+          radial-gradient(circle at 60% 40%, rgba(0,255,128,0.05) 0, transparent 60%)
+        `,
+        backgroundSize: '80px 80px, 40px 40px, 60px 60px, 80px 80px, 100% 100%',
+        backgroundPosition: '0 0, 0 0, 0 0, 40px 40px, center',
+        position: "relative",
+        overflow: "hidden"
+      }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography
@@ -72,7 +89,7 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
-              aria-label="account of current user"
+              aria-label={tCommon("common-ui:ariaLabels.accountOfCurrentUser")}
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
@@ -204,7 +221,7 @@ function ResponsiveAppBar() {
           ) : user ? (
             <>
               <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Profile menu">
+                <Tooltip title={tCommon("common-ui:tooltips.profileMenu")}>
                   <IconButton
                     onClick={handleOpenUserMenu}
                     sx={{ p: 0 }}

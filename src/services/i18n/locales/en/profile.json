@@ -21,6 +21,16 @@
         "required": "Last Name is required"
       }
     },
+    "phoneNumber": {
+      "label": "Phone Number",
+      "validation": {
+        "required": "Phone Number is required",
+        "invalid": "Phone Number must be in format +1XXXXXXXXXX",
+        "server": {
+          "phoneAlreadyExists": "Phone number already exists"
+        }
+      }
+    },
     "email": {
       "label": "New Email",
       "validation": {

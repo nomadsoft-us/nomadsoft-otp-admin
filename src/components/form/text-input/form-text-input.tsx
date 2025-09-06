@@ -12,6 +12,7 @@ import {
   FieldValues,
 } from "react-hook-form";
 import { InputBaseComponentProps } from "@mui/material/InputBase/InputBase";
+import { useTranslation } from "@/services/i18n/client";
 
 export type TextInputProps = {
   label: string;
@@ -40,6 +41,7 @@ function TextInput(
     ref?: Ref<HTMLDivElement | null>;
   }
 ) {
+  const { t } = useTranslation("common-ui");
   const [isShowPassword, setIsShowPassword] = useState(false);
 
   const handleClickShowPassword = () => setIsShowPassword((show) => !show);
@@ -81,7 +83,9 @@ function TextInput(
             props.type === "password" ? (
               <InputAdornment position="end">
                 <IconButton
-                  aria-label="toggle password visibility"
+                  aria-label={t(
+                    "common-ui:ariaLabels.togglePasswordVisibility"
+                  )}
                   onClick={handleClickShowPassword}
                   onMouseDown={handleMouseDownPassword}
                   edge="end"

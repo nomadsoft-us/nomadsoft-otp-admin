@@ -19,6 +19,8 @@ import Link from "@/components/link";
 import Box from "@mui/material/Box";
 import MuiLink from "@mui/material/Link";
 import HTTP_CODES_ENUM from "@/services/api/types/http-codes";
+import AuthPageWrapper from "@/components/auth/auth-page-wrapper";
+import GlassmorphismCard from "@/components/auth/glassmorphism-card";
 import { useTranslation } from "@/services/i18n/client";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
@@ -35,6 +37,7 @@ type SignUpFormData = {
   firstName: string;
   lastName: string;
   email: string;
+  phoneNumber: string;
   password: string;
   policy: TPolicy[];
 };
@@ -53,6 +56,13 @@ const useValidationSchema = () => {
       .string()
       .email(t("sign-up:inputs.email.validation.invalid"))
       .required(t("sign-up:inputs.email.validation.required")),
+    phoneNumber: yup
+      .string()
+      .matches(
+        /^\+1[0-9]{10}$/,
+        t("sign-up:inputs.phoneNumber.validation.invalid")
+      )
+      .required(t("sign-up:inputs.phoneNumber.validation.required")),
     password: yup
       .string()
       .min(6, t("sign-up:inputs.password.validation.min"))
@@ -75,6 +85,42 @@ function FormActions() {
       type="submit"
       disabled={isSubmitting}
       data-testid="sign-up-submit"
+      fullWidth
+      sx={{
+        background: "linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)",
+        border: "none",
+        borderRadius: "12px",
+        padding: (theme) => theme.spacing(2, 3),
+        color: "white",
+        fontSize: "16px",
+        fontWeight: 600,
+        cursor: "pointer",
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        position: "relative",
+        overflow: "hidden",
+        boxShadow: "0 4px 15px rgba(99, 102, 241, 0.4)",
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          top: 0,
+          left: "-100%",
+          width: "100%",
+          height: "100%",
+          background:
+            "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
+          transition: "left 0.5s ease",
+        },
+        "&:hover": {
+          transform: "translateY(-2px)",
+          boxShadow: "0 8px 25px rgba(99, 102, 241, 0.6)",
+          "&::before": {
+            left: "100%",
+          },
+        },
+        "&:active": {
+          transform: "translateY(0)",
+        },
+      }}
     >
       {t("sign-up:actions.submit")}
     </Button>
@@ -98,6 +144,7 @@ function Form() {
       firstName: "",
       lastName: "",
       email: "",
+      phoneNumber: "",
       password: "",
       policy: [],
     },
@@ -140,96 +187,137 @@ function Form() {
   });
 
   return (
-    <FormProvider {...methods}>
-      <Container maxWidth="xs">
-        <form onSubmit={onSubmit}>
-          <Grid container spacing={2} mb={2}>
-            <Grid size={{ xs: 12 }} mt={3}>
-              <Typography variant="h6">{t("sign-up:title")}</Typography>
-            </Grid>
-            <Grid size={{ xs: 12 }}>
-              <FormTextInput<SignUpFormData>
-                name="firstName"
-                label={t("sign-up:inputs.firstName.label")}
-                type="text"
-                autoFocus
-                testId="first-name"
-              />
-            </Grid>
+    <AuthPageWrapper>
+      <FormProvider {...methods}>
+        <Container maxWidth="xs">
+          <GlassmorphismCard
+            sx={{
+              padding: { xs: 2, sm: 3 },
+              margin: { xs: 1, sm: 2 },
+              mt: { xs: 2, sm: 4 },
+            }}
+          >
+            <form onSubmit={onSubmit}>
+              <Grid container spacing={2} mb={2}>
+                <Grid size={{ xs: 12 }} mt={3}>
+                  <Typography variant="h6">{t("sign-up:title")}</Typography>
+                </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <FormTextInput<SignUpFormData>
+                    name="firstName"
+                    label={t("sign-up:inputs.firstName.label")}
+                    type="text"
+                    autoFocus
+                    testId="first-name"
+                  />
+                </Grid>
 
-            <Grid size={{ xs: 12 }}>
-              <FormTextInput<SignUpFormData>
-                name="lastName"
-                label={t("sign-up:inputs.lastName.label")}
-                type="text"
-                testId="last-name"
-              />
-            </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <FormTextInput<SignUpFormData>
+                    name="lastName"
+                    label={t("sign-up:inputs.lastName.label")}
+                    type="text"
+                    testId="last-name"
+                  />
+                </Grid>
 
-            <Grid size={{ xs: 12 }}>
-              <FormTextInput<SignUpFormData>
-                name="email"
-                label={t("sign-up:inputs.email.label")}
-                type="email"
-                testId="email"
-              />
-            </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <FormTextInput<SignUpFormData>
+                    name="email"
+                    label={t("sign-up:inputs.email.label")}
+                    type="email"
+                    testId="email"
+                  />
+                </Grid>
 
-            <Grid size={{ xs: 12 }}>
-              <FormTextInput<SignUpFormData>
-                name="password"
-                label={t("sign-up:inputs.password.label")}
-                type="password"
-                testId="password"
-              />
-            </Grid>
-            <Grid size={{ xs: 12 }}>
-              <FormCheckboxInput
-                name="policy"
-                label=""
-                testId="privacy"
-                options={policyOptions}
-                keyValue="id"
-                keyExtractor={(option) => option.id.toString()}
-                renderOption={(option) => (
-                  <span>
-                    {option.name}
-                    <MuiLink href="/privacy-policy" target="_blank">
-                      {t("sign-up:inputs.policy.label")}
-                    </MuiLink>
-                  </span>
+                <Grid size={{ xs: 12 }}>
+                  <FormTextInput<SignUpFormData>
+                    name="phoneNumber"
+                    label={t("sign-up:inputs.phoneNumber.label")}
+                    type="tel"
+                    testId="phone-number"
+                  />
+                </Grid>
+
+                <Grid size={{ xs: 12 }}>
+                  <FormTextInput<SignUpFormData>
+                    name="password"
+                    label={t("sign-up:inputs.password.label")}
+                    type="password"
+                    testId="password"
+                  />
+                </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <FormCheckboxInput
+                    name="policy"
+                    label=""
+                    testId="privacy"
+                    options={policyOptions}
+                    keyValue="id"
+                    keyExtractor={(option) => option.id.toString()}
+                    renderOption={(option) => (
+                      <span>
+                        {option.name}
+                        <MuiLink href="/privacy-policy" target="_blank">
+                          {t("sign-up:inputs.policy.label")}
+                        </MuiLink>
+                      </span>
+                    )}
+                  />
+                </Grid>
+
+                <Grid size={{ xs: 12 }}>
+                  <Box
+                    display="flex"
+                    gap={1}
+                    flexDirection={{ xs: "column", sm: "row" }}
+                  >
+                    <FormActions />
+                    <Button
+                      variant="contained"
+                      color="inherit"
+                      LinkComponent={Link}
+                      data-testid="login"
+                      href="/sign-in"
+                      fullWidth
+                      sx={{
+                        background: "rgba(255, 255, 255, 0.1)",
+                        backdropFilter: "blur(10px)",
+                        border: "1px solid rgba(255, 255, 255, 0.2)",
+                        borderRadius: "12px",
+                        padding: (theme) => theme.spacing(2, 3),
+                        color: "white",
+                        fontSize: "16px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                        "&:hover": {
+                          background: "rgba(255, 255, 255, 0.15)",
+                          transform: "translateY(-2px)",
+                          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)",
+                        },
+                      }}
+                    >
+                      {t("sign-up:actions.accountAlreadyExists")}
+                    </Button>
+                  </Box>
+                </Grid>
+
+                {[isGoogleAuthEnabled, isFacebookAuthEnabled].some(Boolean) && (
+                  <Grid size={{ xs: 12 }}>
+                    <Divider sx={{ mb: 2 }}>
+                      <Chip label={t("sign-up:or")} />
+                    </Divider>
+
+                    <SocialAuth />
+                  </Grid>
                 )}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12 }}>
-              <FormActions />
-              <Box ml={1} component="span">
-                <Button
-                  variant="contained"
-                  color="inherit"
-                  LinkComponent={Link}
-                  data-testid="login"
-                  href="/sign-in"
-                >
-                  {t("sign-up:actions.accountAlreadyExists")}
-                </Button>
-              </Box>
-            </Grid>
-
-            {[isGoogleAuthEnabled, isFacebookAuthEnabled].some(Boolean) && (
-              <Grid size={{ xs: 12 }}>
-                <Divider sx={{ mb: 2 }}>
-                  <Chip label={t("sign-up:or")} />
-                </Divider>
-
-                <SocialAuth />
               </Grid>
-            )}
-          </Grid>
-        </form>
-      </Container>
-    </FormProvider>
+            </form>
+          </GlassmorphismCard>
+        </Container>
+      </FormProvider>
+    </AuthPageWrapper>
   );
 }
 

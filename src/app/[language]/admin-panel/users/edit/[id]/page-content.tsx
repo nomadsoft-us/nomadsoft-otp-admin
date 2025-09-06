@@ -30,6 +30,7 @@ type EditUserFormData = {
   email: string;
   firstName: string;
   lastName: string;
+  phoneNumber: string;
   photo?: FileEntity;
   role: Role;
 };
@@ -58,6 +59,15 @@ const useValidationEditUserSchema = () => {
       .string()
       .required(
         t("admin-panel-users-edit:inputs.lastName.validation.required")
+      ),
+    phoneNumber: yup
+      .string()
+      .matches(
+        /^\+1[0-9]{10}$/,
+        t("admin-panel-users-edit:inputs.phoneNumber.validation.invalid")
+      )
+      .required(
+        t("admin-panel-users-edit:inputs.phoneNumber.validation.required")
       ),
     role: yup
       .object()
@@ -142,6 +152,7 @@ function FormEditUser() {
       email: "",
       firstName: "",
       lastName: "",
+      phoneNumber: "",
       role: undefined,
       photo: undefined,
     },
@@ -188,6 +199,7 @@ function FormEditUser() {
           email: user?.email ?? "",
           firstName: user?.firstName ?? "",
           lastName: user?.lastName ?? "",
+          phoneNumber: user?.phoneNumber ?? "",
           role: {
             id: Number(user?.role?.id),
           },
@@ -234,6 +246,15 @@ function FormEditUser() {
                 name="lastName"
                 testId="last-name"
                 label={t("admin-panel-users-edit:inputs.lastName.label")}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              <FormTextInput<EditUserFormData>
+                name="phoneNumber"
+                testId="phone-number"
+                type="tel"
+                label={t("admin-panel-users-edit:inputs.phoneNumber.label")}
               />
             </Grid>
 

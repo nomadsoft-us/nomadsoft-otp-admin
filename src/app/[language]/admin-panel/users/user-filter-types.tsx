@@ -4,6 +4,7 @@ import { User } from "@/services/api/types/user";
 
 export type UserFilterType = {
   roles?: Role[];
+  search?: string;
 };
 
 export type UserSortType = {

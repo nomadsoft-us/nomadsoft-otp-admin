@@ -13,6 +13,7 @@ export type UsersRequest = {
   limit: number;
   filters?: {
     roles?: Role[];
+    search?: string;
   };
   sort?: Array<{
     orderBy: keyof User;

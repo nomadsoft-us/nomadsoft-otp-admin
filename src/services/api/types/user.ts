@@ -11,6 +11,8 @@ export type User = {
   email: string;
   firstName?: string;
   lastName?: string;
+  phoneNumber?: string;
+  phoneVerified?: boolean;
   photo?: FileEntity;
   provider?: UserProviderEnum;
   socialId?: string;

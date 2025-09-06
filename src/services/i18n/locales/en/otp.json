@@ -1,0 +1,8 @@
+{
+  "ariaLabels": {
+    "enterVerificationCode": "Enter verification code"
+  },
+  "errors": {
+    "webOtpError": "WebOTP error"
+  }
+}

@@ -35,6 +35,12 @@ function Profile() {
           <Typography variant="h5" gutterBottom data-testid="user-email">
             {user?.email}
           </Typography>
+          {user?.phoneNumber && (
+            <Typography variant="h6" gutterBottom data-testid="user-phone">
+              {user?.phoneNumber}
+              {user?.phoneVerified && " ✓"}
+            </Typography>
+          )}
           <Grid container>
             <Grid>
               <Button

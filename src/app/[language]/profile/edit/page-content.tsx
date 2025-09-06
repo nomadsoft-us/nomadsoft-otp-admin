@@ -25,6 +25,7 @@ import { UserProviderEnum } from "@/services/api/types/user";
 type EditProfileBasicInfoFormData = {
   firstName: string;
   lastName: string;
+  phoneNumber: string;
   photo?: FileEntity;
 };
 
@@ -49,6 +50,13 @@ const useValidationBasicInfoSchema = () => {
     lastName: yup
       .string()
       .required(t("profile:inputs.lastName.validation.required")),
+    phoneNumber: yup
+      .string()
+      .matches(
+        /^\+1[0-9]{10}$/,
+        t("profile:inputs.phoneNumber.validation.invalid")
+      )
+      .required(t("profile:inputs.phoneNumber.validation.required")),
   });
 };
 
@@ -164,6 +172,7 @@ function FormBasicInfo() {
     defaultValues: {
       firstName: "",
       lastName: "",
+      phoneNumber: "",
       photo: undefined,
     },
   });
@@ -201,6 +210,7 @@ function FormBasicInfo() {
     reset({
       firstName: user?.firstName ?? "",
       lastName: user?.lastName ?? "",
+      phoneNumber: user?.phoneNumber ?? "",
       photo: user?.photo,
     });
   }, [user, reset]);
@@ -233,6 +243,15 @@ function FormBasicInfo() {
                 name="lastName"
                 label={t("profile:inputs.lastName.label")}
                 testId="last-name"
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              <FormTextInput<EditProfileBasicInfoFormData>
+                name="phoneNumber"
+                label={t("profile:inputs.phoneNumber.label")}
+                type="tel"
+                testId="phone-number"
               />
             </Grid>
 

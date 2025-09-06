@@ -9,6 +9,7 @@ import Typography from "@mui/material/Typography";
 import {
   PropsWithChildren,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -42,6 +43,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import { UserFilterType, UserSortType } from "./user-filter-types";
 import { SortEnum } from "@/services/api/types/sort-type";
+import TextField from "@mui/material/TextField";
+import SearchIcon from "@mui/icons-material/Search";
+import InputAdornment from "@mui/material/InputAdornment";
 
 type UsersKeys = keyof User;
 
@@ -86,6 +90,7 @@ function Actions({ user }: { user: User }) {
   const anchorRef = useRef<HTMLDivElement>(null);
   const canDelete = user.id !== authUser?.id;
   const { t: tUsers } = useTranslation("admin-panel-users");
+  const { t: tCommon } = useTranslation("common-ui");
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -173,7 +178,7 @@ function Actions({ user }: { user: User }) {
         <ButtonGroup
           variant="contained"
           ref={anchorRef}
-          aria-label="split button"
+          aria-label={tCommon("common-ui:ariaLabels.splitButton")}
           size="small"
         >
           {mainButton}
@@ -182,7 +187,7 @@ function Actions({ user }: { user: User }) {
             size="small"
             aria-controls={open ? "split-button-menu" : undefined}
             aria-expanded={open ? "true" : undefined}
-            aria-label="select merge strategy"
+            aria-label={tCommon("common-ui:ariaLabels.selectMergeStrategy")}
             aria-haspopup="menu"
             onClick={handleToggle}
           >
@@ -238,18 +243,25 @@ function Actions({ user }: { user: User }) {
 function Users() {
   const { t: tUsers } = useTranslation("admin-panel-users");
   const { t: tRoles } = useTranslation("admin-panel-roles");
+  const { t: tCommon } = useTranslation("common-ui");
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [{ order, orderBy }, setSort] = useState<{
-    order: SortEnum;
-    orderBy: UsersKeys;
-  }>(() => {
+  const [searchValue, setSearchValue] = useState(() => {
+    const searchParamsFilter = searchParams.get("filter");
+    if (searchParamsFilter) {
+      const parsed = JSON.parse(searchParamsFilter) as UserFilterType;
+      return parsed.search || "";
+    }
+    return "";
+  });
+
+  const { order, orderBy } = useMemo(() => {
     const searchParamsSort = searchParams.get("sort");
     if (searchParamsSort) {
       return JSON.parse(searchParamsSort);
     }
     return { order: SortEnum.DESC, orderBy: "id" };
-  });
+  }, [searchParams]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -263,17 +275,48 @@ function Users() {
       "sort",
       JSON.stringify({ order: newOrder, orderBy: newOrderBy })
     );
-    setSort({
-      order: newOrder,
-      orderBy: newOrderBy,
-    });
-    router.push(window.location.pathname + "?" + searchParams.toString());
+    router.replace(window.location.pathname + "?" + searchParams.toString());
   };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchValue(value);
+  };
+
+  // Debounced URL update for search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const searchParams = new URLSearchParams(window.location.search);
+      const currentFilter = searchParams.get("filter");
+      let filter: UserFilterType = {};
+
+      if (currentFilter) {
+        filter = JSON.parse(currentFilter);
+      }
+
+      if (searchValue.trim()) {
+        filter.search = searchValue.trim();
+      } else {
+        delete filter.search;
+      }
+
+      if (Object.keys(filter).length > 0) {
+        searchParams.set("filter", JSON.stringify(filter));
+      } else {
+        searchParams.delete("filter");
+      }
+
+      router.replace(window.location.pathname + "?" + searchParams.toString());
+    }, 2500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchValue, router]);
 
   const filter = useMemo(() => {
     const searchParamsFilter = searchParams.get("filter");
     if (searchParamsFilter) {
-      return JSON.parse(searchParamsFilter) as UserFilterType;
+      const parsed = JSON.parse(searchParamsFilter) as UserFilterType;
+      return parsed;
     }
 
     return undefined;
@@ -304,6 +347,25 @@ function Users() {
             </Typography>
           </Grid>
           <Grid container size="auto" wrap="nowrap" spacing={2}>
+            <Grid size="auto">
+              <TextField
+                value={searchValue}
+                onChange={handleSearchChange}
+                placeholder={tUsers(
+                  "admin-panel-users:filter.inputs.search.label"
+                )}
+                variant="outlined"
+                size="small"
+                sx={{ width: 250 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
             <Grid size="auto">
               <UserFilter />
             </Grid>
@@ -342,9 +404,15 @@ function Users() {
                   >
                     {tUsers("admin-panel-users:table.column1")}
                   </TableSortCellWrapper>
-                  <TableCell style={{ width: 200 }}>
+                  <TableSortCellWrapper
+                    width={200}
+                    orderBy={orderBy}
+                    order={order}
+                    column="firstName"
+                    handleRequestSort={handleRequestSort}
+                  >
                     {tUsers("admin-panel-users:table.column2")}
-                  </TableCell>
+                  </TableSortCellWrapper>
                   <TableSortCellWrapper
                     orderBy={orderBy}
                     order={order}
@@ -354,14 +422,30 @@ function Users() {
                     {tUsers("admin-panel-users:table.column3")}
                   </TableSortCellWrapper>
 
-                  <TableCell style={{ width: 80 }}>
+                  <TableSortCellWrapper
+                    width={160}
+                    orderBy={orderBy}
+                    order={order}
+                    column="phoneNumber"
+                    handleRequestSort={handleRequestSort}
+                  >
                     {tUsers("admin-panel-users:table.column4")}
-                  </TableCell>
+                  </TableSortCellWrapper>
+
+                  <TableSortCellWrapper
+                    width={80}
+                    orderBy={orderBy}
+                    order={order}
+                    column="role"
+                    handleRequestSort={handleRequestSort}
+                  >
+                    {tUsers("admin-panel-users:table.column5")}
+                  </TableSortCellWrapper>
                   <TableCell style={{ width: 130 }}></TableCell>
                 </TableRow>
                 {isFetchingNextPage && (
                   <TableRow>
-                    <TableCellLoadingContainer colSpan={6}>
+                    <TableCellLoadingContainer colSpan={7}>
                       <LinearProgress />
                     </TableCellLoadingContainer>
                   </TableRow>
@@ -381,6 +465,12 @@ function Users() {
                   {user?.firstName} {user?.lastName}
                 </TableCell>
                 <TableCell>{user?.email}</TableCell>
+                <TableCell style={{ width: 160 }}>
+                  {user?.phoneNumber ||
+                    tCommon("common-ui:status.notAvailable")}
+                  {user?.phoneVerified &&
+                    ` ${tCommon("common-ui:status.verified")}`}
+                </TableCell>
                 <TableCell style={{ width: 80 }}>
                   {tRoles(`role.${user?.role?.id}`)}
                 </TableCell>

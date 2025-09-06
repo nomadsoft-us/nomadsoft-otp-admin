@@ -26,6 +26,7 @@ type CreateFormData = {
   email: string;
   firstName: string;
   lastName: string;
+  phoneNumber: string;
   password: string;
   passwordConfirmation: string;
   photo?: FileEntity;
@@ -51,6 +52,15 @@ const useValidationSchema = () => {
       .string()
       .required(
         t("admin-panel-users-create:inputs.lastName.validation.required")
+      ),
+    phoneNumber: yup
+      .string()
+      .matches(
+        /^\+1[0-9]{10}$/,
+        t("admin-panel-users-create:inputs.phoneNumber.validation.invalid")
+      )
+      .required(
+        t("admin-panel-users-create:inputs.phoneNumber.validation.required")
       ),
     password: yup
       .string()
@@ -112,6 +122,7 @@ function FormCreateUser() {
       email: "",
       firstName: "",
       lastName: "",
+      phoneNumber: "",
       password: "",
       passwordConfirmation: "",
       role: {
@@ -203,6 +214,15 @@ function FormCreateUser() {
                 name="lastName"
                 testId="last-name"
                 label={t("admin-panel-users-create:inputs.lastName.label")}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              <FormTextInput<CreateFormData>
+                name="phoneNumber"
+                testId="phone-number"
+                type="tel"
+                label={t("admin-panel-users-create:inputs.phoneNumber.label")}
               />
             </Grid>
 

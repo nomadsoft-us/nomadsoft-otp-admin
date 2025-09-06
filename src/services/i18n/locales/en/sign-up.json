@@ -1,8 +1,8 @@
 {
   "title": "Sign Up",
   "actions": {
-    "submit": "Sign Up",
-    "accountAlreadyExists": "Already have an account?"
+    "submit": "Create",
+    "accountAlreadyExists": "Cancel"
   },
   "inputs": {
     "firstName": {
@@ -24,6 +24,16 @@
         "invalid": "Email is not valid",
         "server": {
           "emailAlreadyExists": "Email already exists"
+        }
+      }
+    },
+    "phoneNumber": {
+      "label": "Phone Number",
+      "validation": {
+        "required": "Phone Number is required",
+        "invalid": "Phone Number must be in format +1XXXXXXXXXX",
+        "server": {
+          "phoneAlreadyExists": "Phone number already exists"
         }
       }
     },

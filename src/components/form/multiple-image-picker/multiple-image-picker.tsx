@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import Image from "next/image";
 import {
   Controller,
   ControllerProps,
@@ -141,7 +142,12 @@ function MultipleImagePicker(props: MultipleImagePickerProps) {
                     />
                   </IconButton>
                 </StyledOverlay>
-                <img src={item.path} loading="lazy" />
+                <Image
+                  src={item.path}
+                  alt="Uploaded image"
+                  fill
+                  style={{ objectFit: "cover" }}
+                />
               </ImageListItem>
             ))}
           </ImageList>

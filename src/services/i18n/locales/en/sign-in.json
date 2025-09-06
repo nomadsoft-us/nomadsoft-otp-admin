@@ -1,8 +1,8 @@
 {
   "title": "Sign In",
   "actions": {
-    "submit": "Sign In",
-    "createAccount": "Create Account",
+    "submit": "Continue",
+    "createAccount": "Create",
     "forgotPassword": "Forgot Password?"
   },
   "inputs": {
@@ -26,6 +26,32 @@
           "incorrectPassword": "Password is not valid"
         }
       }
+    },
+    "phoneNumber": {
+      "label": "Phone Number",
+      "validation": {
+        "server": {
+          "phoneNumberRequired": "Phone number is required for two-factor authentication"
+        }
+      }
+    },
+    "otp": {
+      "validation": {
+        "server": {
+          "failedToSendOtp": "Failed to send verification code. Please try again.",
+          "invalidOtp": "Invalid verification code. Please try again."
+        }
+      }
+    }
+  },
+  "otp": {
+    "title": "Enter Verification Code",
+    "description": "We've sent a 6-digit code to your phone number",
+    "validation": {
+      "invalid": "Invalid verification code. Please try again."
+    },
+    "actions": {
+      "back": "Back to Sign In"
     }
   },
   "or": "OR"

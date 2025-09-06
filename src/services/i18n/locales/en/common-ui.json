@@ -1,0 +1,15 @@
+{
+  "ariaLabels": {
+    "togglePasswordVisibility": "toggle password visibility",
+    "splitButton": "split button",
+    "selectMergeStrategy": "select merge strategy", 
+    "accountOfCurrentUser": "account of current user"
+  },
+  "tooltips": {
+    "profileMenu": "Profile menu"
+  },
+  "status": {
+    "verified": "✓",
+    "notAvailable": "-"
+  }
+}

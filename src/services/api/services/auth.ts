@@ -15,6 +15,27 @@ export type AuthLoginResponse = Tokens & {
   user: User;
 };
 
+export type AuthInitiateLoginRequest = {
+  email: string;
+  password: string;
+};
+
+export type AuthInitiateLoginResponse = {
+  success: boolean;
+  message: string;
+  temporaryToken: string;
+  expiresAt: string;
+};
+
+export type AuthVerifyLoginRequest = {
+  email: string;
+  otpCode: string;
+};
+
+export type AuthVerifyLoginResponse = Tokens & {
+  user: User;
+};
+
 export function useAuthLoginService() {
   const fetchBase = useFetch();
 
@@ -24,6 +45,36 @@ export function useAuthLoginService() {
         method: "POST",
         body: JSON.stringify(data),
       }).then(wrapperFetchJsonResponse<AuthLoginResponse>);
+    },
+    [fetchBase]
+  );
+}
+
+export function useAuthInitiateLoginService() {
+  const fetchBase = useFetch();
+
+  return useCallback(
+    (data: AuthInitiateLoginRequest, requestConfig?: RequestConfigType) => {
+      return fetchBase(`${API_URL}/v1/auth/email/login/initiate`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        ...requestConfig,
+      }).then(wrapperFetchJsonResponse<AuthInitiateLoginResponse>);
+    },
+    [fetchBase]
+  );
+}
+
+export function useAuthVerifyLoginService() {
+  const fetchBase = useFetch();
+
+  return useCallback(
+    (data: AuthVerifyLoginRequest, requestConfig?: RequestConfigType) => {
+      return fetchBase(`${API_URL}/v1/auth/email/login/verify`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        ...requestConfig,
+      }).then(wrapperFetchJsonResponse<AuthVerifyLoginResponse>);
     },
     [fetchBase]
   );
