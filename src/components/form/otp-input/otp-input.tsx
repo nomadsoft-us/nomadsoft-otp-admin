@@ -19,7 +19,10 @@ const OtpContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  gap: theme.spacing(1.5),
+  gap: theme.spacing(2),
+  [theme.breakpoints.down("md")]: {
+    gap: theme.spacing(1.5),
+  },
   [theme.breakpoints.down("sm")]: {
     gap: theme.spacing(1),
   },
@@ -54,12 +57,12 @@ const OtpBox = styled(Box, {
   shouldForwardProp: (prop) => prop !== "isActive" && prop !== "hasError",
 })<{ isActive?: boolean; hasError?: boolean }>(
   ({ theme, isActive, hasError }) => ({
-    width: "56px",
-    height: "56px",
+    width: "72px",
+    height: "72px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "1.5rem",
+    fontSize: "1.75rem",
     fontWeight: "bold",
     border: `2px solid ${hasError ? theme.palette.error.main : theme.palette.divider}`,
     borderRadius: theme.shape.borderRadius,
@@ -67,6 +70,11 @@ const OtpBox = styled(Box, {
     cursor: "text",
     position: "relative",
     color: theme.palette.text.primary,
+    [theme.breakpoints.down("md")]: {
+      width: "56px",
+      height: "56px",
+      fontSize: "1.5rem",
+    },
     [theme.breakpoints.down("sm")]: {
       width: "40px",
       height: "40px",

@@ -4,7 +4,8 @@ import withPageRequiredGuest from "@/services/auth/with-page-required-guest";
 import { useForm, FormProvider, useFormState } from "react-hook-form";
 import {
   useAuthLoginService,
-  useAuthSignUpService,
+  useAuthSignupInitiateService,
+  useAuthSignupVerifyService,
 } from "@/services/api/services/auth";
 import useAuthActions from "@/services/auth/use-auth-actions";
 import useAuthTokens from "@/services/auth/use-auth-tokens";
@@ -27,6 +28,10 @@ import Chip from "@mui/material/Chip";
 import SocialAuth from "@/services/social-auth/social-auth";
 import { isGoogleAuthEnabled } from "@/services/social-auth/google/google-config";
 import { isFacebookAuthEnabled } from "@/services/social-auth/facebook/facebook-config";
+import { useColorScheme } from "@mui/material/styles";
+import OtpInputComponent from "@/components/form/otp-input/otp-input";
+import { useState } from "react";
+import CircularProgress from "@mui/material/CircularProgress";
 
 type TPolicy = {
   id: string;
@@ -41,6 +46,8 @@ type SignUpFormData = {
   password: string;
   policy: TPolicy[];
 };
+
+type SignUpStep = "registration" | "verification";
 
 const useValidationSchema = () => {
   const { t } = useTranslation("sign-up");
@@ -77,6 +84,8 @@ const useValidationSchema = () => {
 function FormActions() {
   const { t } = useTranslation("sign-up");
   const { isSubmitting } = useFormState();
+  const { colorScheme } = useColorScheme();
+  const isLightMode = colorScheme === "light";
 
   return (
     <Button
@@ -91,7 +100,7 @@ function FormActions() {
         border: "none",
         borderRadius: "12px",
         padding: (theme) => theme.spacing(2, 3),
-        color: "white",
+        color: isLightMode ? "black" : "white",
         fontSize: "16px",
         fontWeight: 600,
         cursor: "pointer",
@@ -131,12 +140,21 @@ function Form() {
   const { setUser } = useAuthActions();
   const { setTokensInfo } = useAuthTokens();
   const fetchAuthLogin = useAuthLoginService();
-  const fetchAuthSignUp = useAuthSignUpService();
+  const fetchAuthSignupInitiate = useAuthSignupInitiateService();
+  const fetchAuthSignupVerify = useAuthSignupVerifyService();
   const { t } = useTranslation("sign-up");
   const validationSchema = useValidationSchema();
+  const { colorScheme } = useColorScheme();
+  const isLightMode = colorScheme === "light";
   const policyOptions = [
     { id: "policy", name: t("sign-up:inputs.policy.agreement") },
   ];
+
+  const [currentStep, setCurrentStep] = useState<SignUpStep>("registration");
+  const [signupData, setSignupData] = useState<SignUpFormData | null>(null);
+  const [maskedPhoneNumber, setMaskedPhoneNumber] = useState<string>("");
+  const [otpError, setOtpError] = useState<string>("");
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 
   const methods = useForm<SignUpFormData>({
     resolver: yupResolver(validationSchema),
@@ -152,39 +170,147 @@ function Form() {
 
   const { handleSubmit, setError } = methods;
 
-  const onSubmit = handleSubmit(async (formData) => {
-    const { data: dataSignUp, status: statusSignUp } =
-      await fetchAuthSignUp(formData);
+  const onRegistrationSubmit = handleSubmit(async (formData) => {
+    const { data, status } = await fetchAuthSignupInitiate(formData);
 
-    if (statusSignUp === HTTP_CODES_ENUM.UNPROCESSABLE_ENTITY) {
-      (Object.keys(dataSignUp.errors) as Array<keyof SignUpFormData>).forEach(
+    if (status === HTTP_CODES_ENUM.UNPROCESSABLE_ENTITY) {
+      (Object.keys(data.errors) as Array<keyof SignUpFormData>).forEach(
         (key) => {
           setError(key, {
             type: "manual",
             message: t(
-              `sign-up:inputs.${key}.validation.server.${dataSignUp.errors[key]}`
+              `sign-up:inputs.${key}.validation.server.${data.errors[key]}`
             ),
           });
         }
       );
-
       return;
     }
 
-    const { data: dataSignIn, status: statusSignIn } = await fetchAuthLogin({
-      email: formData.email,
-      password: formData.password,
-    });
-
-    if (statusSignIn === HTTP_CODES_ENUM.OK) {
-      setTokensInfo({
-        token: dataSignIn.token,
-        refreshToken: dataSignIn.refreshToken,
-        tokenExpires: dataSignIn.tokenExpires,
-      });
-      setUser(dataSignIn.user);
+    if (status === HTTP_CODES_ENUM.OK) {
+      setSignupData(formData);
+      setMaskedPhoneNumber(data.phoneNumber);
+      setCurrentStep("verification");
     }
   });
+
+  const handleOtpComplete = async (otpCode: string) => {
+    if (!signupData) return;
+
+    setIsVerifyingOtp(true);
+    setOtpError("");
+
+    try {
+      const { status } = await fetchAuthSignupVerify({
+        ...signupData,
+        code: otpCode,
+      });
+
+      if (status === HTTP_CODES_ENUM.UNPROCESSABLE_ENTITY) {
+        setOtpError(t("sign-up:otp.validation.invalid"));
+        return;
+      }
+
+      if (status === HTTP_CODES_ENUM.NO_CONTENT) {
+        // Account created successfully, now sign in
+        const { data: loginData, status: loginStatus } = await fetchAuthLogin({
+          email: signupData.email,
+          password: signupData.password,
+        });
+
+        if (loginStatus === HTTP_CODES_ENUM.OK) {
+          setTokensInfo({
+            token: loginData.token,
+            refreshToken: loginData.refreshToken,
+            tokenExpires: loginData.tokenExpires,
+          });
+          setUser(loginData.user);
+        }
+      }
+    } catch (error) {
+      setOtpError(t("sign-up:otp.validation.invalid"));
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
+  const handleBackToRegistration = () => {
+    setCurrentStep("registration");
+    setOtpError("");
+  };
+
+  if (currentStep === "verification") {
+    return (
+      <AuthPageWrapper>
+        <Container maxWidth="sm">
+          <GlassmorphismCard
+            sx={{
+              padding: { xs: 2, sm: 3, md: 4 },
+              margin: { xs: 1, sm: 2 },
+              maxWidth: { xs: "100%", sm: "400px", md: "500px" },
+              mx: "auto",
+            }}
+          >
+            <Grid container spacing={2} mb={2}>
+              <Grid size={{ xs: 12 }}>
+                <Typography variant="h6" textAlign="center">
+                  {t("sign-up:otp.title")}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  textAlign="center"
+                  color="text.secondary"
+                  mt={1}
+                >
+                  {t("sign-up:otp.description")} {maskedPhoneNumber}
+                </Typography>
+              </Grid>
+
+              <Grid size={{ xs: 12 }} mt={2}>
+                <Box display="flex" justifyContent="center">
+                  <OtpInputComponent
+                    length={6}
+                    onComplete={handleOtpComplete}
+                    disabled={isVerifyingOtp}
+                    error={!!otpError}
+                    autoFocus
+                  />
+                </Box>
+              </Grid>
+
+              {otpError && (
+                <Grid size={{ xs: 12 }}>
+                  <Typography color="error" variant="body2" textAlign="center">
+                    {otpError}
+                  </Typography>
+                </Grid>
+              )}
+
+              {isVerifyingOtp && (
+                <Grid size={{ xs: 12 }}>
+                  <Box display="flex" justifyContent="center">
+                    <CircularProgress size={24} />
+                  </Box>
+                </Grid>
+              )}
+
+              <Grid size={{ xs: 12 }} mt={2}>
+                <Box display="flex" justifyContent="center">
+                  <Button
+                    variant="text"
+                    onClick={handleBackToRegistration}
+                    disabled={isVerifyingOtp}
+                  >
+                    {t("sign-up:otp.actions.back")}
+                  </Button>
+                </Box>
+              </Grid>
+            </Grid>
+          </GlassmorphismCard>
+        </Container>
+      </AuthPageWrapper>
+    );
+  }
 
   return (
     <AuthPageWrapper>
@@ -194,12 +320,11 @@ function Form() {
             sx={{
               padding: { xs: 2, sm: 3 },
               margin: { xs: 1, sm: 2 },
-              mt: { xs: 2, sm: 4 },
             }}
           >
-            <form onSubmit={onSubmit}>
+            <form onSubmit={onRegistrationSubmit}>
               <Grid container spacing={2} mb={2}>
-                <Grid size={{ xs: 12 }} mt={3}>
+                <Grid size={{ xs: 12 }}>
                   <Typography variant="h6">{t("sign-up:title")}</Typography>
                 </Grid>
                 <Grid size={{ xs: 12 }}>
@@ -286,7 +411,7 @@ function Form() {
                         border: "1px solid rgba(255, 255, 255, 0.2)",
                         borderRadius: "12px",
                         padding: (theme) => theme.spacing(2, 3),
-                        color: "white",
+                        color: isLightMode ? "black" : "white",
                         fontSize: "16px",
                         fontWeight: 500,
                         cursor: "pointer",

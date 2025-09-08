@@ -147,6 +147,62 @@ export function useAuthSignUpService() {
   );
 }
 
+export type AuthSignupInitiateRequest = {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+};
+
+export type AuthSignupInitiateResponse = {
+  success: boolean;
+  message: string;
+  expiresAt: string;
+  phoneNumber: string;
+};
+
+export function useAuthSignupInitiateService() {
+  const fetchBase = useFetch();
+
+  return useCallback(
+    (data: AuthSignupInitiateRequest, requestConfig?: RequestConfigType) => {
+      return fetchBase(`${API_URL}/v1/auth/email/signup/initiate`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        ...requestConfig,
+      }).then(wrapperFetchJsonResponse<AuthSignupInitiateResponse>);
+    },
+    [fetchBase]
+  );
+}
+
+export type AuthSignupVerifyRequest = {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  code: string;
+};
+
+export type AuthSignupVerifyResponse = void;
+
+export function useAuthSignupVerifyService() {
+  const fetchBase = useFetch();
+
+  return useCallback(
+    (data: AuthSignupVerifyRequest, requestConfig?: RequestConfigType) => {
+      return fetchBase(`${API_URL}/v1/auth/email/signup/verify`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        ...requestConfig,
+      }).then(wrapperFetchJsonResponse<AuthSignupVerifyResponse>);
+    },
+    [fetchBase]
+  );
+}
+
 export type AuthConfirmEmailRequest = {
   hash: string;
 };

@@ -2,10 +2,9 @@
 
 import Box from "@mui/material/Box";
 import { PropsWithChildren } from "react";
-import { useColorScheme, useTheme } from "@mui/material/styles";
+import { useColorScheme } from "@mui/material/styles";
 
-export default function AuthPageWrapper({ children }: PropsWithChildren) {
-  const theme = useTheme();
+export default function PageWrapper({ children }: PropsWithChildren) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
 
@@ -14,14 +13,10 @@ export default function AuthPageWrapper({ children }: PropsWithChildren) {
       sx={{
         minHeight: "100vh",
         width: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: theme.spacing(1),
         position: "relative",
         background: isDark
           ? "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139, 92, 246, 0.25), transparent 70%), #000000"
-          : "transparent",
+          : "linear-gradient(120deg, #d5c5ff 0%, #a7f3d0 50%, #f0f0f0 100%)",
       }}
     >
       {children}

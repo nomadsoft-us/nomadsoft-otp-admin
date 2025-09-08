@@ -53,6 +53,33 @@
       "validation": {
         "required": "Consent to the Privacy Policy is required"
       }
+    },
+    "code": {
+      "label": "Verification Code",
+      "validation": {
+        "required": "Verification code is required",
+        "invalid": "Invalid verification code",
+        "server": {
+          "invalidOtp": "Invalid or expired verification code. Please try again.",
+          "failedToSendOtp": "Failed to send verification code. Please try again."
+        }
+      }
+    }
+  },
+  "otp": {
+    "title": "Verify Your Phone Number",
+    "description": "We've sent a 6-digit verification code to:",
+    "validation": {
+      "invalid": "Invalid or expired verification code. Please try again."
+    },
+    "actions": {
+      "verify": "Verify & Create Account",
+      "resend": "Resend Code",
+      "back": "Back to Sign Up"
+    },
+    "success": {
+      "title": "Phone Verified!",
+      "description": "Your phone number has been verified. Creating your account..."
     }
   },
   "or": "OR"

@@ -30,6 +30,7 @@ import { IS_SIGN_UP_ENABLED } from "@/services/auth/config";
 import OtpInputComponent from "@/components/form/otp-input/otp-input";
 import { useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useColorScheme } from "@mui/material/styles";
 
 type SignInFormData = {
   email: string;
@@ -56,6 +57,8 @@ const useValidationSchema = () => {
 function CredentialsFormActions() {
   const { t } = useTranslation("sign-in");
   const { isSubmitting } = useFormState();
+  const { colorScheme } = useColorScheme();
+  const isLightMode = colorScheme === "light";
 
   return (
     <Button
@@ -70,7 +73,7 @@ function CredentialsFormActions() {
         border: "none",
         borderRadius: "12px",
         padding: (theme) => theme.spacing(2, 3),
-        color: "white",
+        color: isLightMode ? "black" : "white",
         fontSize: "16px",
         fontWeight: 600,
         cursor: "pointer",
@@ -113,6 +116,8 @@ function Form() {
   const fetchAuthVerifyLogin = useAuthVerifyLoginService();
   const { t } = useTranslation("sign-in");
   const validationSchema = useValidationSchema();
+  const { colorScheme } = useColorScheme();
+  const isLightMode = colorScheme === "light";
 
   const [currentStep, setCurrentStep] = useState<LoginStep>("credentials");
   const [userEmail, setUserEmail] = useState<string>("");
@@ -190,16 +195,17 @@ function Form() {
   if (currentStep === "otp") {
     return (
       <AuthPageWrapper>
-        <Container maxWidth="xs">
+        <Container maxWidth="sm">
           <GlassmorphismCard
             sx={{
-              padding: { xs: 2, sm: 3 },
+              padding: { xs: 2, sm: 3, md: 4 },
               margin: { xs: 1, sm: 2 },
-              mt: { xs: 2, sm: 4 },
+              maxWidth: { xs: "100%", sm: "400px", md: "500px" },
+              mx: "auto",
             }}
           >
             <Grid container spacing={2} mb={2}>
-              <Grid size={{ xs: 12 }} mt={3}>
+              <Grid size={{ xs: 12 }}>
                 <Typography variant="h6" textAlign="center">
                   {t("sign-in:otp.title")}
                 </Typography>
@@ -213,7 +219,7 @@ function Form() {
                 </Typography>
               </Grid>
 
-              <Grid size={{ xs: 12 }} mt={3}>
+              <Grid size={{ xs: 12 }} mt={2}>
                 <Box display="flex" justifyContent="center">
                   <OtpInputComponent
                     length={6}
@@ -267,12 +273,11 @@ function Form() {
             sx={{
               padding: { xs: 2, sm: 3 },
               margin: { xs: 1, sm: 2 },
-              mt: { xs: 2, sm: 4 },
             }}
           >
             <form onSubmit={onCredentialsSubmit}>
               <Grid container spacing={2} mb={2}>
-                <Grid size={{ xs: 12 }} mt={3}>
+                <Grid size={{ xs: 12 }}>
                   <Typography variant="h6">{t("sign-in:title")}</Typography>
                 </Grid>
                 <Grid size={{ xs: 12 }}>
@@ -325,7 +330,7 @@ function Form() {
                           border: "1px solid rgba(255, 255, 255, 0.2)",
                           borderRadius: "12px",
                           padding: (theme) => theme.spacing(2, 3),
-                          color: "white",
+                          color: isLightMode ? "black" : "white",
                           fontSize: "16px",
                           fontWeight: 500,
                           cursor: "pointer",

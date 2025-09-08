@@ -17,11 +17,13 @@ import {
 import { useGetUsersQuery, usersQueryKeys } from "./queries/queries";
 import { TableVirtuoso } from "react-virtuoso";
 import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
 import Avatar from "@mui/material/Avatar";
 import LinearProgress from "@mui/material/LinearProgress";
 import { styled } from "@mui/material/styles";
-import TableComponents from "@/components/table/table-components";
+import GlassmorphismTableComponents, {
+  HeaderRowWrapper,
+  StyledLoadingRow,
+} from "@/components/table/table-components-glassmorphism";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Button from "@mui/material/Button";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -386,14 +388,14 @@ function Users() {
           <TableVirtuoso
             style={{ height: 500 }}
             data={result}
-            components={TableComponents}
+            components={GlassmorphismTableComponents}
             endReached={handleScroll}
             overscan={20}
             useWindowScroll
             increaseViewportBy={400}
             fixedHeaderContent={() => (
               <>
-                <TableRow>
+                <HeaderRowWrapper>
                   <TableCell style={{ width: 50 }}></TableCell>
                   <TableSortCellWrapper
                     width={100}
@@ -442,13 +444,13 @@ function Users() {
                     {tUsers("admin-panel-users:table.column5")}
                   </TableSortCellWrapper>
                   <TableCell style={{ width: 130 }}></TableCell>
-                </TableRow>
+                </HeaderRowWrapper>
                 {isFetchingNextPage && (
-                  <TableRow>
+                  <StyledLoadingRow>
                     <TableCellLoadingContainer colSpan={7}>
                       <LinearProgress />
                     </TableCellLoadingContainer>
-                  </TableRow>
+                  </StyledLoadingRow>
                 )}
               </>
             )}

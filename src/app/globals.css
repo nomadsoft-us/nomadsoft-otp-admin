@@ -1,1 +1,31 @@
 /* Your global CSS here */
+
+/* Combined Light Mode Background - Body Level */
+body.light {
+  position: relative;
+  min-height: 100vh;
+}
+
+body.light::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -2;
+  background: linear-gradient(120deg, #d5c5ff 0%, #a7f3d0 50%, #f0f0f0 100%);
+}
+
+body.light::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background-image: 
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 4px), 
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 4px);
+}
