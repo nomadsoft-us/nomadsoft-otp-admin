@@ -12,6 +12,7 @@ acceptLanguage.languages([...languages]);
 const PUBLIC_FILE = /\.(.*)$/;
 
 export function middleware(req: NextRequest) {
+  // Skip middleware for Next.js internal routes, API routes, and static files
   if (
     req.nextUrl.pathname.startsWith("/_next") ||
     req.nextUrl.pathname.includes("/api/") ||
