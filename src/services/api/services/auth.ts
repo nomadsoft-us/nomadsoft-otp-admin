@@ -23,8 +23,10 @@ export type AuthInitiateLoginRequest = {
 export type AuthInitiateLoginResponse = {
   success: boolean;
   message: string;
-  temporaryToken: string;
-  expiresAt: string;
+  temporaryToken?: string;
+  expiresAt?: string;
+  skipOtp?: boolean;
+  loginData?: AuthLoginResponse;
 };
 
 export type AuthVerifyLoginRequest = {
@@ -322,5 +324,129 @@ export function useAuthGetMeService() {
       }).then(wrapperFetchJsonResponse<AuthGetMeResponse>);
     },
     [fetch]
+  );
+}
+
+// NEW STEP-BASED SIGNUP SERVICES
+
+export type AuthSignupStep1Request = {
+  email: string;
+  password: string;
+};
+
+export type AuthSignupStep1Response = Tokens & {
+  user: User;
+};
+
+export function useAuthSignupStep1Service() {
+  const fetchBase = useFetch();
+
+  return useCallback(
+    (data: AuthSignupStep1Request, requestConfig?: RequestConfigType) => {
+      return fetchBase(`${API_URL}/v1/auth/signup/step1`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        ...requestConfig,
+      }).then(wrapperFetchJsonResponse<AuthSignupStep1Response>);
+    },
+    [fetchBase]
+  );
+}
+
+export type VerificationStatusResponse = {
+  currentStep: "email_verified" | "identity_verified" | "fully_verified";
+  nextRoute: string;
+  isFullyVerified: boolean;
+  message: string;
+};
+
+export function useAuthVerificationStatusService() {
+  const fetchBase = useFetch();
+
+  return useCallback(
+    (requestConfig?: RequestConfigType) => {
+      return fetchBase(`${API_URL}/v1/auth/verification/status`, {
+        method: "GET",
+        ...requestConfig,
+      }).then(wrapperFetchJsonResponse<VerificationStatusResponse>);
+    },
+    [fetchBase]
+  );
+}
+
+export type AuthIdentityVerifyRequest = {
+  idDocumentId: string;
+  selfieId: string;
+};
+
+export type AuthIdentityVerifyResponse = {
+  success: boolean;
+  message: string;
+  similarity?: number;
+  extractedFirstName?: string;
+  extractedLastName?: string;
+  newVerificationStep?: string;
+};
+
+export function useAuthIdentityVerifyService() {
+  const fetchBase = useFetch();
+
+  return useCallback(
+    (data: AuthIdentityVerifyRequest, requestConfig?: RequestConfigType) => {
+      return fetchBase(`${API_URL}/v1/auth/identity/verify`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        ...requestConfig,
+      }).then(wrapperFetchJsonResponse<AuthIdentityVerifyResponse>);
+    },
+    [fetchBase]
+  );
+}
+
+export type AuthPhoneInitiateRequest = {
+  phoneNumber: string;
+};
+
+export type AuthPhoneInitiateResponse = {
+  success: boolean;
+  message: string;
+  expiresAt: string;
+  phoneNumber: string;
+};
+
+export function useAuthPhoneInitiateService() {
+  const fetchBase = useFetch();
+
+  return useCallback(
+    (data: AuthPhoneInitiateRequest, requestConfig?: RequestConfigType) => {
+      return fetchBase(`${API_URL}/v1/auth/phone/initiate`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        ...requestConfig,
+      }).then(wrapperFetchJsonResponse<AuthPhoneInitiateResponse>);
+    },
+    [fetchBase]
+  );
+}
+
+export type AuthPhoneVerifyRequest = {
+  phoneNumber: string;
+  code: string;
+};
+
+export type AuthPhoneVerifyResponse = void;
+
+export function useAuthPhoneVerifyService() {
+  const fetchBase = useFetch();
+
+  return useCallback(
+    (data: AuthPhoneVerifyRequest, requestConfig?: RequestConfigType) => {
+      return fetchBase(`${API_URL}/v1/auth/phone/verify`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        ...requestConfig,
+      }).then(wrapperFetchJsonResponse<AuthPhoneVerifyResponse>);
+    },
+    [fetchBase]
   );
 }

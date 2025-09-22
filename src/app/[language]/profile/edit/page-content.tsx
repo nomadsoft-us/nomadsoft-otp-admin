@@ -9,7 +9,7 @@ import Typography from "@mui/material/Typography";
 import FormTextInput from "@/components/form/text-input/form-text-input";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import withPageRequiredAuth from "@/services/auth/with-page-required-auth";
+import withPageRequiredVerifiedAuth from "@/services/auth/with-page-required-verified-auth";
 import { useEffect } from "react";
 import useAuth from "@/services/auth/use-auth";
 import { useSnackbar } from "@/hooks/use-snackbar";
@@ -502,4 +502,4 @@ function EditProfile() {
   );
 }
 
-export default withPageRequiredAuth(EditProfile);
+export default withPageRequiredVerifiedAuth(EditProfile);

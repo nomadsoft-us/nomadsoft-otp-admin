@@ -5,9 +5,10 @@
   "scripts": {
     "dev": "npm run lint -- --fix && next dev --turbopack",
     "build": "next build",
+    "rebuild": "npx tsc --noEmit && npm run lint -- --fix && npm run build && npm run start",
     "build:restart": "npm run lint -- --fix && pm2 stop nomadsoft-otp-admin && npm run build && pm2 start nomadsoft-otp-admin && pm2 logs",
     "build:e2e": "cp -n example.env.local .env.local && next build",
-    "start": "next start",
+    "start": "next start -p 3030",
     "lint": "next lint",
     "prepare": "is-ci || husky",
     "release": "release-it",

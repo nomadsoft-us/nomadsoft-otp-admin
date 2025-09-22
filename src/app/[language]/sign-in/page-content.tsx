@@ -138,6 +138,27 @@ function Form() {
     const { data, status } = await fetchAuthInitiateLogin(formData);
 
     if (status === HTTP_CODES_ENUM.UNPROCESSABLE_ENTITY) {
+      // Check if the error is about unverified account
+      const errorMessages = Object.values(data.errors || {}).join(" ");
+      if (
+        errorMessages.includes("not verified") ||
+        errorMessages.includes("verification")
+      ) {
+        // User exists but not fully verified - redirect to onboarding
+        setError("email", {
+          type: "manual",
+          message:
+            "Your account needs to complete verification. Redirecting to complete signup...",
+        });
+
+        // Delay to show message, then redirect
+        setTimeout(() => {
+          window.location.href = "/sign-up";
+        }, 2000);
+        return;
+      }
+
+      // Normal validation errors
       (Object.keys(data.errors) as Array<keyof SignInFormData>).forEach(
         (key) => {
           setError(key, {
@@ -152,8 +173,29 @@ function Form() {
     }
 
     if (status === HTTP_CODES_ENUM.OK) {
-      setUserEmail(formData.email);
-      setCurrentStep("otp");
+      // Log response for debugging
+      console.log("Login initiate response:", data);
+
+      // Check if we should skip OTP (for partially verified users)
+      if (data.skipOtp === true && data.loginData) {
+        // User is not fully verified - log them in and redirect to complete signup
+        setTokensInfo({
+          token: data.loginData.token,
+          refreshToken: data.loginData.refreshToken,
+          tokenExpires: data.loginData.tokenExpires,
+        });
+        setUser(data.loginData.user);
+
+        // Redirect to sign-up to complete verification
+        setTimeout(() => {
+          window.location.href = "/sign-up";
+        }, 100);
+        return;
+      } else if (data.temporaryToken) {
+        // Normal OTP flow for fully verified users
+        setUserEmail(formData.email);
+        setCurrentStep("otp");
+      }
     }
   });
 
