@@ -18,8 +18,6 @@ import {
 import { useTranslation } from "react-i18next";
 import IconButton from "@mui/material/IconButton";
 import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
-import ImageListItem from "@mui/material/ImageListItem";
-import ImageList from "@mui/material/ImageList";
 
 export type ImagePickerProps = {
   error?: string;
@@ -128,27 +126,36 @@ function ImagePicker(props: ImagePickerProps) {
       )}
       {props?.value ? (
         <>
-          <ImageList sx={{ width: `100%` }} cols={3} rowHeight={250}>
-            <ImageListItem style={{ overflow: "hidden" }}>
-              <StyledOverlay>
-                <IconButton
-                  disableRipple
-                  onClick={removeImageHandle}
-                  color="inherit"
-                >
-                  <ClearOutlinedIcon
-                    sx={{ width: 50, height: 50, color: "white" }}
-                  />
-                </IconButton>
-              </StyledOverlay>
-              <Image
-                src={props.value.path}
-                alt="Uploaded image"
-                fill
-                style={{ objectFit: "cover" }}
-              />
-            </ImageListItem>
-          </ImageList>
+          <Box
+            sx={{
+              position: "relative",
+              width: "100%",
+              maxWidth: 400,
+              height: 300,
+              mx: "auto",
+            }}
+          >
+            <StyledOverlay>
+              <IconButton
+                disableRipple
+                onClick={removeImageHandle}
+                color="inherit"
+              >
+                <ClearOutlinedIcon
+                  sx={{ width: 50, height: 50, color: "white" }}
+                />
+              </IconButton>
+            </StyledOverlay>
+            <Image
+              src={props.value.path}
+              alt="Uploaded image"
+              fill
+              style={{
+                objectFit: "contain",
+                borderRadius: 8,
+              }}
+            />
+          </Box>
         </>
       ) : (
         <></>

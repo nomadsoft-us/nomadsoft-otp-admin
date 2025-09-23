@@ -29,7 +29,7 @@ export default function SignupCompleteContent() {
         window.location.href = "/signup-complete?reload=done";
       }, 100);
     }
-  }, []);
+  }, [hasReloaded]);
 
   useEffect(() => {
     // If no user after reload, redirect to sign-in

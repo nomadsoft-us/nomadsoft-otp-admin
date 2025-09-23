@@ -16,6 +16,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { FileEntity } from "@/services/api/types/file-entity";
 import { OnboardingData } from "../onboarding-flow";
 import FormImagePicker from "@/components/form/image-picker/image-picker";
+import FormImageCropper from "@/components/form/image-cropper/image-cropper";
 
 type IdentityVerificationFormData = {
   idDocument: FileEntity | null;
@@ -199,35 +200,41 @@ export default function IdentityVerificationStep({
             </Typography>
           </Grid>
 
-          {/* ID Document Upload */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              1. Upload ID Document
-            </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              Upload a clear photo of your government-issued ID (passport,
-              driver&apos;s license, or national ID)
-            </Typography>
-            <FormImagePicker
-              name="idDocument"
-              testId="id-document-upload"
-              label="ID Document"
-            />
+          {/* ID Document Upload - Full Width Column */}
+          <Grid size={{ xs: 12 }}>
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                Step 1: Upload ID Document
+              </Typography>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Upload a clear photo of your government-issued ID (passport,
+                driver&apos;s license, or national ID)
+              </Typography>
+              <FormImagePicker
+                name="idDocument"
+                testId="id-document-upload"
+                label="ID Document"
+              />
+            </Box>
           </Grid>
 
-          {/* Selfie Upload */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              2. Take a Selfie
-            </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              Take a clear selfie that matches the photo on your ID document
-            </Typography>
-            <FormImagePicker
-              name="selfie"
-              testId="selfie-upload"
-              label="Selfie"
-            />
+          {/* Selfie Upload - Full Width Column */}
+          <Grid size={{ xs: 12 }}>
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                Step 2: Take a Selfie
+              </Typography>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Take a clear selfie that matches the photo on your ID document.
+                Make sure your face is clearly visible and well-lit.
+              </Typography>
+              <FormImageCropper
+                name="selfie"
+                testId="selfie-upload"
+                label="Selfie"
+                aspectRatio={1}
+              />
+            </Box>
           </Grid>
 
           {/* Error Alert */}

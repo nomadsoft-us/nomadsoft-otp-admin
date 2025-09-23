@@ -92,20 +92,33 @@ export default function PhoneVerificationStep({
             responseData.expiresAt
           ).toLocaleTimeString()}`
         );
-      } else if (status === HTTP_CODES_ENUM.UNPROCESSABLE_ENTITY) {
-        // User is already verified, redirect to signup complete
-        setSuccessMessage("Your phone is already verified! Redirecting...");
-        setTimeout(() => {
-          router.push("/signup-complete");
-        }, 1500);
       } else {
         setError("Failed to send verification code. Please try again.");
       }
     } catch (error) {
-      setSuccessMessage("Your phone is already verified! Redirecting...");
-      setTimeout(() => {
-        router.push("/signup-complete");
-      }, 1500);
+      // Only redirect if the error specifically indicates already fully verified
+      const axiosError = error as {
+        response?: {
+          status?: number;
+          data?: { errors?: { verification?: string } };
+        };
+      };
+      if (
+        axiosError?.response?.status === HTTP_CODES_ENUM.UNPROCESSABLE_ENTITY
+      ) {
+        const errorMessage = axiosError?.response?.data?.errors?.verification;
+        if (errorMessage === "alreadyFullyVerified") {
+          setSuccessMessage("Your phone is already verified! Redirecting...");
+          setTimeout(() => {
+            router.push("/signup-complete");
+          }, 1500);
+        } else {
+          // Other validation errors
+          setError("Failed to send verification code. Please try again.");
+        }
+      } else {
+        setError("An error occurred. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
