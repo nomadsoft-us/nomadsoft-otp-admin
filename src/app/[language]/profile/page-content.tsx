@@ -1,6 +1,6 @@
 "use client";
 import useAuth from "@/services/auth/use-auth";
-import withPageRequiredAuth from "@/services/auth/with-page-required-auth";
+import withPageRequiredVerifiedAuth from "@/services/auth/with-page-required-verified-auth";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
@@ -60,4 +60,4 @@ function Profile() {
   );
 }
 
-export default withPageRequiredAuth(Profile);
+export default withPageRequiredVerifiedAuth(Profile);

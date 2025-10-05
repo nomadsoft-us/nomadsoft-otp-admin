@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "npm run lint -- --fix && next dev --turbopack",
     "build": "next build",
+    "rebuild": "npx tsc --noEmit && npm run lint -- --fix && npm run build && npm run start",
     "build:restart": "npm run lint -- --fix && pm2 stop nomadsoft-otp-admin && npm run build && pm2 start nomadsoft-otp-admin && pm2 logs",
     "build:e2e": "cp -n example.env.local .env.local && next build",
     "start": "next start",
@@ -52,6 +53,7 @@
     "react-dropzone": "14.3.8",
     "react-hook-form": "7.62.0",
     "react-i18next": "15.7.2",
+    "react-image-crop": "^11.0.10",
     "react-toastify": "11.0.5",
     "react-virtuoso": "4.14.0",
     "typescript": "5.9.2",

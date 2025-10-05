@@ -13,6 +13,7 @@ export type User = {
   lastName?: string;
   phoneNumber?: string;
   phoneVerified?: boolean;
+  verificationStep?: "email_verified" | "identity_verified" | "fully_verified";
   photo?: FileEntity;
   provider?: UserProviderEnum;
   socialId?: string;
